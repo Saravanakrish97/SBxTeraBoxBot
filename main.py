@@ -33,8 +33,8 @@ async def get_message(m: Message):
 async def handle_message(m: Message):
     url = get_urls_from_string(m.text)
     if not url:
-        return await m.reply("Please enter a valid url.")
-    hm = await m.reply("Sending you the media wait...")
+        return await m.reply("Bhai link shi bejh.")
+    hm = await m.reply("Bejh rha hu bhai wait kar thoda")
     is_spam = db.get(m.sender_id)
     if is_spam and m.sender_id not in ADMINS:
         ttl = db.ttl(m.sender_id)
@@ -50,7 +50,7 @@ async def handle_message(m: Message):
         )
     shorturl = extract_code_from_url(url)
     if not shorturl:
-        return await hm.edit("Seems like your link is invalid.")
+        return await hm.edit("Bhai mujhe lag rha hai teri link galat hai.")
     fileid = db.get_key(shorturl)
     if fileid:
         uid = db.get_key(f"mid_{fileid}")
