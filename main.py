@@ -1,10 +1,10 @@
 import asyncio
 import logging
 import time
-
-import humanreadable as hr
+from fastapi import FastAPI
 from telethon.sync import TelegramClient, events
 from telethon.tl.custom.message import Message
+import humanreadable as hr
 
 from config import *
 from redis_db import db
@@ -12,10 +12,15 @@ from send_media import VideoSender
 from terabox import get_data
 from tools import extract_code_from_url, get_urls_from_string
 
-bot = TelegramClient("main", API_ID, API_HASH)
+# FastAPI initialization
+app = FastAPI()
 
+bot = TelegramClient("main", API_ID, API_HASH)
 log = logging.getLogger(__name__)
 
+@app.get("/")
+async def read_root():
+    return {"message": "Bot is running"}
 
 @bot.on(
     events.NewMessage(
@@ -82,7 +87,14 @@ async def handle_message(m: Message):
     )
     asyncio.create_task(sender.send_video())
 
+# Start bot
+async def start_bot():
+    await bot.start(bot_token=BOT_TOKEN)
+    await bot.run_until_disconnected()
 
-bot.start(bot_token=BOT_TOKEN)
-
-bot.run_until_disconnected()
+# Run the bot and web server concurrently
+if __name__ == "__main__":
+    import uvicorn
+    loop = asyncio.get_event_loop()
+    loop.create_task(start_bot())
+    uvicorn.run(app, host="0.0.0.0", port=8000)
