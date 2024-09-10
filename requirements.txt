@@ -13,4 +13,3 @@ humanreadable
 fastapi
 pillow
 uvicorn
-jinja2
