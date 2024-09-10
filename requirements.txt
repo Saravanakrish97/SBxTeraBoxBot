@@ -10,6 +10,4 @@ requests
 redis
 FastTelethonhelper
 humanreadable
-fastapi
-pillow
-uvicorn
+
