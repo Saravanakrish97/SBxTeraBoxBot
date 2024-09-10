@@ -1,10 +1,10 @@
 import asyncio
 import logging
 import time
-from fastapi import FastAPI
+
+import humanreadable as hr
 from telethon.sync import TelegramClient, events
 from telethon.tl.custom.message import Message
-import humanreadable as hr
 
 from config import *
 from redis_db import db
@@ -12,15 +12,10 @@ from send_media import VideoSender
 from terabox import get_data
 from tools import extract_code_from_url, get_urls_from_string
 
-# FastAPI initialization
-app = FastAPI()
-
 bot = TelegramClient("main", API_ID, API_HASH)
+
 log = logging.getLogger(__name__)
 
-@app.get("/")
-async def read_root():
-    return {"message": "Bot is running"}
 
 @bot.on(
     events.NewMessage(
@@ -38,14 +33,15 @@ async def get_message(m: Message):
 async def handle_message(m: Message):
     url = get_urls_from_string(m.text)
     if not url:
-        return await m.reply("Bhai link shi bejh.")
-    hm = await m.reply("Bejh rha hu bhai wait kar thoda")
+        return await m.reply("Please enter a valid url.")
+    hm = await m.reply("Sending you the media wait...")
     is_spam = db.get(m.sender_id)
     if is_spam and m.sender_id not in ADMINS:
         ttl = db.ttl(m.sender_id)
         t = hr.Time(str(ttl), default_unit=hr.Time.Unit.SECOND)
         return await hm.edit(
-            f"You are spamming.\n**Please wait {t.to_humanreadable()} and try again.**",
+            f"You are spamming.\n**Please wait {
+                t.to_humanreadable()} and try again.**",
             parse_mode="markdown",
         )
     if_token_avl = db.get(f"active_{m.sender_id}")
@@ -55,7 +51,7 @@ async def handle_message(m: Message):
         )
     shorturl = extract_code_from_url(url)
     if not shorturl:
-        return await hm.edit("Bhai mujhe lag rha hai teri link galat hai.")
+        return await hm.edit("Seems like your link is invalid.")
     fileid = db.get_key(shorturl)
     if fileid:
         uid = db.get_key(f"mid_{fileid}")
@@ -74,7 +70,8 @@ async def handle_message(m: Message):
     db.set(m.sender_id, time.monotonic(), ex=60)
 
     if int(data["sizebytes"]) > 524288000 and m.sender_id not in ADMINS:
-        return await hm.edit(f"Sorry! File is too big.\n**I can download only 500MB and this file is of {data['size']}.**\nRather you can download this file from the link below:\n{data['url']}",
+        return await hm.edit(
+            f"Sorry! File is too big.\n**I can download only 500MB and this file is of {data['size']}.**\nRather you can download this file from the link below:\n{data['url']}",
             parse_mode="markdown",
         )
 
@@ -87,14 +84,7 @@ async def handle_message(m: Message):
     )
     asyncio.create_task(sender.send_video())
 
-# Start bot
-async def start_bot():
-    await bot.start(bot_token=BOT_TOKEN)
-    await bot.run_until_disconnected()
 
-# Run the bot and web server concurrently
-if __name__ == "__main__":
-    import uvicorn
-    loop = asyncio.get_event_loop()
-    loop.create_task(start_bot())
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+bot.start(bot_token=BOT_TOKEN)
+
+bot.run_until_disconnected()

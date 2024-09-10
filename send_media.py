@@ -14,7 +14,7 @@ from telethon.tl.types import Document
 from telethon.types import UpdateEditMessage
 
 from cansend import CanSend
-from config import BOT_USERNAME, PRIVATE_CHAT_ID
+from config import *
 from FastTelethon import upload_file
 from redis_db import db
 from tools import (
@@ -54,13 +54,13 @@ class VideoSender:
 File Name: `{self.data['file_name']}`
 Size: **{self.data["size"]}**
 
-@RoldexVerse
+@{CHANNEL_USERNAME}
             """
         self.caption2 = f"""
 Downloading `{self.data['file_name']}`
 Size: **{self.data["size"]}**
 
-@RoldexVerse
+@{CHANNEL_USERNAME}
             """
 
     async def progress_bar(self, current_downloaded, total_downloaded, state="Sending"):
@@ -193,10 +193,8 @@ Size: **{self.data["size"]}**
                                 ),
                             ],
                             [
-                                Button.url("Channel ", url="https://t.me/RoldexVerse"),
-                                Button.url(
-                                    "Group ", url="https://t.me/RoldexVerseChats"
-                                ),
+                                Button.url("Channel ", url=f"https://t.me/{CHANNEL_USERNAME}"),
+                                Button.url("BOT OWNER ", url=f"https://t.me/{ADMIN_USERNAME}"),
                             ],
                         ],
                     )
