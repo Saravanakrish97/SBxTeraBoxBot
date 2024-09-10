@@ -12,3 +12,4 @@ FastTelethonhelper
 humanreadable
 fastapi
 pillow
+uvicorn
