@@ -48,6 +48,7 @@ def check_url_patterns(url: str) -> bool:
         r"teraboxlink\.com",
         r"terasharelink\.com",
         r"teraboxshare\.com",
+        r"terafileshare\.com",
     ]
 
     for pattern in patterns:
