@@ -17,11 +17,11 @@ ADMINS = [6063339688]
 
 BOT_USERNAME = "TXPVTBOT"
 
-CHANNEL_USERNAME="SamyBotz"
+CHANNEL_USERNAME="Venuma"
 
-ADMIN_USERNAME="SBxAdminBot"
+ADMIN_USERNAME="VideosVenuma"
 
 # Force user to join this channel. (make sure you have promoted the bot on this chat.)
-FORCE_LINK ="@SamyBotz"
+FORCE_LINK ="@Venuma"
 
 PUBLIC_EARN_API = "7d12fd740f36a8307901fec1c1b4debd90ced9c3"  # https://publicearn.com/api
